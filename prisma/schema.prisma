@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String?
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(CUSTOMER)
+  orders        Order[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  price       Float
+  stock       Int
+  image       String   // Cloudinary URL
+  isActive    Boolean  @default(true)
+  
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  products  Product[]
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  total     Float
+  status    OrderStatus @default(PENDING)
+  items     Json        // Mantiene un snapshot inmutable { productId, title, price, quantity }
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model SiteSettings {
+  id             Int      @id @default(1)
+  heroTitle      String
+  heroSubtitle   String
+  heroImage      String
+  carouselImages String[] // Array de URLs, max 3
+  contactPhone   String?
+  contactEmail   String?
+  contactAddress String?
+
+  updatedAt      DateTime @updatedAt
+}
