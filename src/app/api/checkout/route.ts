@@ -88,7 +88,11 @@ export async function POST(req: NextRequest) {
         });
 
         // 5. Devolver al Front el checkout_url público de Mercado Pago
-        return NextResponse.json({ url: response.init_point });
+        return NextResponse.json({
+            url: response.init_point,
+            preferenceId: response.id,
+            orderId: nuevaOrden.id
+        });
 
     } catch (error) {
         console.error("Error validando checkout MP:", error);

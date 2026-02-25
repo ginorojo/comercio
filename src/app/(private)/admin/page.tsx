@@ -5,7 +5,7 @@ export default async function AdminDashboard() {
     const [totalProducts, totalCategories, totalOrders, soldAmountRaw] = await Promise.all([
         prisma.product.count(),
         prisma.category.count(),
-        prisma.order.count(),
+        prisma.order.count({ where: { status: "PAID" } }),
         prisma.order.aggregate({
             _sum: { total: true },
             where: { status: "PAID" },
@@ -29,9 +29,9 @@ export default async function AdminDashboard() {
                     textColor="text-green-700"
                 />
                 <StatCard
-                    title="Órdenes (Todas)"
+                    title="Órdenes (Pagadas)"
                     value={totalOrders}
-                    desc="Ventas globales"
+                    desc="Ventas exitosas"
                     color="bg-blue-50"
                     textColor="text-blue-700"
                 />

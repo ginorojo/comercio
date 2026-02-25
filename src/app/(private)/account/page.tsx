@@ -11,9 +11,12 @@ export default async function AccountPage() {
         redirect("/login");
     }
 
-    // Traer historial de este único usuario
+    // Traer historial de este único usuario (solo pedidos pagados)
     const orders = await prisma.order.findMany({
-        where: { userId: session.user.id },
+        where: {
+            userId: session.user.id,
+            status: "PAID"
+        },
         orderBy: { createdAt: "desc" },
     });
 

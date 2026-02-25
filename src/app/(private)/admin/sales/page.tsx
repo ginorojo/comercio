@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 
 export default async function AdminSalesPage() {
     const orders = await prisma.order.findMany({
+        where: { status: "PAID" },
         include: { user: { select: { name: true, email: true } } },
         orderBy: { createdAt: "desc" },
     });

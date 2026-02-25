@@ -4,7 +4,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 
 export default function CartDrawer({
     isOpen,
@@ -19,32 +19,12 @@ export default function CartDrawer({
 
     const handleCheckout = async () => {
         if (!session) {
-            toast.error("Debes iniciar sesión para comprar.");
+            signIn();
             return;
         }
 
-        try {
-            setLoading(true);
-            const res = await fetch("/api/checkout", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ items }),
-            });
-
-            const json = await res.json();
-            setLoading(false);
-
-            if (res.ok && json.url) {
-                // Redirigir físicamente a la pasarela de pago de Mercado Pago
-                window.location.href = json.url;
-            } else {
-                toast.error(json.error || "Hubo un problema al procesar el pago.");
-            }
-        } catch (error) {
-            console.error(error);
-            setLoading(false);
-            toast.error("Hubo un error de conexión.");
-        }
+        // Ir directamente a la página de checkout simulada por ahora
+        window.location.href = `/checkout`;
     };
 
     if (!isOpen) return null;
